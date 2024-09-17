@@ -23,7 +23,7 @@ int main() {
     // Vetor para armazenar as faces detectadas
     std::vector<cv::Rect> faces;
 
-    // Dependendo da velocidade de deteccao, fazer deteccao de varias imagens. Com um objetivo de 15 seg de execucao sequencial.
+    // Dependendo da velocidade de deteccao, fazer deteccao de varias imagens. Com um objetivo de 15 seg de execucao sequencial no lab.
     // Detecção de faces
     face_cascade.detectMultiScale(gray, faces);
 
