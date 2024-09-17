@@ -3,6 +3,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+// revisar para seguir os padroes vistos em aulas.
+
 int main() {
     // Carrega o classificador Haar Cascade para detecção de faces
     cv::CascadeClassifier face_cascade;
@@ -11,12 +13,7 @@ int main() {
         return -1;
     }
 
-    // Carrega a imagem
-    cv::Mat img = cv::imread("imagem.jpg");
-    if (img.empty()) {
-        printf("Erro ao carregar a imagem.\n");
-        return -1;
-    }
+    // carrega uma imagem ou lista de imagens    
 
     // Conversão para escala de cinza
     cv::Mat gray;
@@ -26,6 +23,7 @@ int main() {
     // Vetor para armazenar as faces detectadas
     std::vector<cv::Rect> faces;
 
+    // Dependendo da velocidade de deteccao, fazer deteccao de varias imagens. Com um objetivo de 15 seg de execucao sequencial.
     // Detecção de faces
     face_cascade.detectMultiScale(gray, faces);
 
