@@ -4,7 +4,7 @@
 #include <opencv2/imgproc.hpp>
 
 // revisar para seguir os padroes vistos em aulas.
-
+// carregar imagens antes e iniciar o timer dpois de carregar as imagens, apenas na parte paralela seguindo a lei de ahemed
 int main() {
     // Carrega o classificador Haar Cascade para detecção de faces
     cv::CascadeClassifier face_cascade;
