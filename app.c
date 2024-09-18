@@ -14,8 +14,8 @@ int main() {
         return -1;
     }
 
-    // Carrega uma imagem
-    std::string path = "/app/Imagens/1.PNG";
+    // Carrega uma imagem de alta resolução
+    std::string path = "/app/Imagens/office.PNG";  // Use uma imagem de alta resolução
     cv::Mat img = cv::imread(path);
 
     if (img.empty()) {
@@ -34,8 +34,14 @@ int main() {
     // Vetor para armazenar as faces detectadas
     std::vector<cv::Rect> faces;
 
-    // Detecção de faces (parte que pode ser paralelizada)
-    face_cascade.detectMultiScale(gray, faces);
+    // Detecção de faces com parâmetros ajustados para maior precisão (mais lento)
+    face_cascade.detectMultiScale(
+        gray, faces, 
+        1.05,     // scaleFactor: quanto menor, mais preciso e mais lento
+        10,       // minNeighbors: quanto maior, mais rigoroso (mais lento)
+        0,        // flags: Use 0 para a configuração padrão
+        cv::Size(30, 30) // minSize: tamanho mínimo da face a ser detectada
+    );
 
     double stoptime_parallel = omp_get_wtime();
 
@@ -45,7 +51,7 @@ int main() {
     }
 
     // Salva a imagem processada com faces detectadas
-    std::string output_path = "/app/Imagens/output_1.PNG";
+    std::string output_path = "/app/Imagens/output_office.PNG";
     cv::imwrite(output_path, img);
 
     printf("Imagem %s processada e salva em %s\n", path.c_str(), output_path.c_str());

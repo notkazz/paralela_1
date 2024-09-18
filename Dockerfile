@@ -31,9 +31,6 @@ COPY app.c /app/
 # Copy the images folder into the container
 COPY Imagens /app/Imagens
 
-# Copy the videos folder into the container (if needed)
-COPY videos /app/videos
-
 # Compile the face detection C++ program with OpenMP support
 RUN g++ -fopenmp app.c -o app `pkg-config --cflags --libs opencv4`
 
