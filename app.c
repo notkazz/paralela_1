@@ -14,9 +14,6 @@ int main() {
         return -1;
     }
 
-    // Processamento da imagem
-    double starttime = omp_get_wtime();
-
     // Carrega uma imagem
     std::string path = "/app/Imagens/1.PNG";
     cv::Mat img = cv::imread(path);
@@ -26,6 +23,9 @@ int main() {
         return -1;
     }
 
+    // Medir o tempo apenas da parte paralelizável
+    double starttime_parallel = omp_get_wtime();
+
     // Conversão para escala de cinza
     cv::Mat gray;
     cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
@@ -34,8 +34,10 @@ int main() {
     // Vetor para armazenar as faces detectadas
     std::vector<cv::Rect> faces;
 
-    // Detecção de faces
+    // Detecção de faces (parte que pode ser paralelizada)
     face_cascade.detectMultiScale(gray, faces);
+
+    double stoptime_parallel = omp_get_wtime();
 
     // Desenha retângulos ao redor das faces detectadas
     for (size_t j = 0; j < faces.size(); j++) {
@@ -48,8 +50,8 @@ int main() {
 
     printf("Imagem %s processada e salva em %s\n", path.c_str(), output_path.c_str());
 
-    double stoptime = omp_get_wtime();
-    printf("Tempo de execução paralelo: %3.2f segundos\n", stoptime - starttime);
+    // Tempo de execução da parte paralelizável
+    printf("Tempo de execução da parte paralelizável: %3.2f segundos\n", stoptime_parallel - starttime_parallel);
 
     return 0;
 }
