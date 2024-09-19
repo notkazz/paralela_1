@@ -32,7 +32,7 @@ COPY app.c /app/
 COPY Imagens /app/Imagens
 
 # Compile the face detection C++ program with OpenMP support
-RUN g++ -fopenmp app.c -o app `pkg-config --cflags --libs opencv4`
+RUN g++ -fopenmp -std=c++17 app.c -o app `pkg-config --cflags --libs opencv4`
 
 # Set the default command to run the compiled app
 CMD ["./app"]
