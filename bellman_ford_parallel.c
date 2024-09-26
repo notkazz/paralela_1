@@ -4,7 +4,7 @@
 #include <limits.h>
 
 #define INF INT_MAX  // Definimos o infinito como o maior valor de inteiro
-#define V 50000       // Número de vértices no grafo
+#define V 10000       // Número de vértices no grafo
 
 // Estrutura para representar uma aresta
 struct Edge {
@@ -13,34 +13,58 @@ struct Edge {
 
 // Função de Bellman-Ford paralelizada
 void bellman_ford(struct Edge edges[], int E, int src) {
-    int distance[V];
+    int *distance_current = malloc(V * sizeof(int));
+    int *distance_next = malloc(V * sizeof(int));
 
-    // Inicializa as distâncias de todos os vértices como infinito
+    // Inicializa as distâncias
     for (int i = 0; i < V; i++) {
-        distance[i] = INF;
+        distance_current[i] = INF;
+        distance_next[i] = INF;
     }
-    distance[src] = 0;  // A distância da fonte para si mesma é 0
+    distance_current[src] = 0;
 
-    // Relaxa todas as arestas V-1 vezes (passos do algoritmo Bellman-Ford)
+    int converged = 0;  // Flag para verificar convergência
+
+    // Relaxa as arestas V-1 vezes
     for (int i = 1; i <= V - 1; i++) {
+        converged = 1;  // Assume que convergiu
+
         #pragma omp parallel for
+        for (int j = 0; j < V; j++) {
+            distance_next[j] = distance_current[j];
+        }
+
+        #pragma omp parallel for reduction(&& : converged)
         for (int j = 0; j < E; j++) {
             int u = edges[j].src;
             int v = edges[j].dest;
             int weight = edges[j].weight;
-            if (distance[u] != INF && distance[u] + weight < distance[v]) {
-                distance[v] = distance[u] + weight;
+            if (distance_current[u] != INF && distance_current[u] + weight < distance_next[v]) {
+                distance_next[v] = distance_current[u] + weight;
+                converged = 0;  // Houve atualização, ainda não convergiu
             }
+        }
+
+        // Troca os ponteiros dos arrays
+        int *temp = distance_current;
+        distance_current = distance_next;
+        distance_next = temp;
+
+        // Se não houve atualização, pode sair do loop
+        if (converged) {
+            break;
         }
     }
 
-    // Verifica a presença de ciclos de peso negativo
+    // Verifica ciclos negativos
     for (int i = 0; i < E; i++) {
         int u = edges[i].src;
         int v = edges[i].dest;
         int weight = edges[i].weight;
-        if (distance[u] != INF && distance[u] + weight < distance[v]) {
+        if (distance_current[u] != INF && distance_current[u] + weight < distance_current[v]) {
             printf("O grafo contém um ciclo de peso negativo.\n");
+            free(distance_current);
+            free(distance_next);
             return;
         }
     }
@@ -48,12 +72,16 @@ void bellman_ford(struct Edge edges[], int E, int src) {
     // Exibe as distâncias calculadas
     printf("Vértice\tDistância da origem\n");
     for (int i = 0; i < V; i++) {
-        if (distance[i] == INF) {
+        if (distance_current[i] == INF) {
             printf("%d\tINF\n", i);
         } else {
-            printf("%d\t%d\n", i, distance[i]);
+            printf("%d\t%d\n", i, distance_current[i]);
         }
     }
+
+    // Libera memória alocada
+    free(distance_current);
+    free(distance_next);
 }
 
 int main() {
