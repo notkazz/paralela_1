@@ -4,7 +4,7 @@
 #include <limits.h>
 
 #define INF INT_MAX  // Definimos o infinito como o maior valor de inteiro
-#define V 10000       // Número de vértices no grafo
+#define V 50000       // Número de vértices no grafo
 
 // Estrutura para representar uma aresta
 struct Edge {
@@ -111,7 +111,7 @@ int main() {
 
     printf("Tempo de execução: %f segundos\n", end_time - start_time);
 
-    // Libera a memória alocada
+    // Caso tenha problema ao rodar com alto nivel de dados descomente: Libera a memória alocada
     free(edges);
 
     return 0;
