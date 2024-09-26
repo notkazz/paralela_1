@@ -1,4 +1,3 @@
-docker build -t face-detection .
+docker build -t bellman_ford_parallel .
 
-docker run -v /caminho/local/Imagens:/app/Imagens face-detection
-docker run -v /C/paralela_1/Imagens:/app/Imagens face-detection
+docker run -it --cpuset-cpus="0-15" --rm bellman_ford_parallel
